@@ -85,6 +85,16 @@ def rename_dir(dir_path: str):
     unreal.EditorAssetLibrary.rename_directory(dir_path)
 
 
+def move_asset(source_asset_path: str, destination_asset_path: str):
+    """重命名文件，当做移动用
+
+    Args:
+        source_asset_path (str): 源路径
+        destination_asset_path (str): 目标路径
+    """
+    unreal.EditorAssetLibrary.rename_asset(source_asset_path, destination_asset_path)
+
+
 def copy_file_to(original_file: str, target_path: str, new_name: str = None):
     """复制文件到指定文件夹，可重命名
 
@@ -146,8 +156,10 @@ def move_assets_with_dialog(assets_path: list[str], target_path):
             if slow_task.should_cancel():
                 break
             slow_task.enter_progress_frame(1, f"正在移动资产...\t{x}/{len(assets_path)}")
-            copy_file_to(assets_path[x - 1], target_path)
-            delete_asset(assets_path[x - 1])
+            move_asset(
+                assets_path[x - 1],
+                target_path + "/" + assets_path[x - 1].split("/")[-1],
+            )
         unreal.EditorAssetLibrary.save_directory(target_path)
 
 
